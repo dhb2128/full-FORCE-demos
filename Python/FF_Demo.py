@@ -11,10 +11,13 @@ from tqdm import trange, tnrange
 import seaborn as sns
 import pdb
 
-if os.environ['_'].split("/")[-1] == "jupyter":
-    tq_use = tnrange
-else:
-    tq_use = trange
+if '_' in os.environ.keys():
+    if os.environ['_'].split("/")[-1] == "jupyter":
+        tq_use = tnrange
+    else:
+        tq_use = trange
+elif 'BINDER_URL' in os.environ.keys():
+    tq_use = rnrange
 
 def create_parameters(dt=0.001):
     '''Use this to define hyperparameters for any RNN instantiation. You can create an "override" script to 
