@@ -455,8 +455,8 @@ class RNN:
         print('Normalized error: %g' % E_norm)
         return E_norm
 
-    def test_batch(self, inps=None, targs=None, norm_only=True, norm_idx=None,
-        inps_and_targs=None, **kwargs):
+    def test_batch(self, inps=None, targs=None, t_stims=None, norm_only=True, norm_idx=None,
+        stim_off=2000, inps_and_targs=None, **kwargs):
         '''
         Function that tests a trained network. Relevant parameters in p start with 'test'
         Inputs:
@@ -474,6 +474,7 @@ class RNN:
         # print('')
 
         n_test_trials = inps.shape[2]
+        decisions = np.zeros(n_test_trials, dtype=bool)
         if norm_only:
             out_all = np.zeros(n_test_trials)
         else:
@@ -486,6 +487,8 @@ class RNN:
             # reshape back to column vector
             targ = targs[:,idx][:,np.newaxis]
             out = self.run(inp)[0]
+
+            decisions[idx] = np.trapz(out[int(t_stims[idx]):stim_off].ravel() - targ[0]) > 0
             if norm_only:
                 if norm_idx is not None:
                     out = out[norm_idx[0]:norm_idx[1]]
@@ -494,7 +497,7 @@ class RNN:
             else:
                 out_all[:,idx] = out.ravel()
 
-        return out_all
+        return out_all, decisions
             
 
 
