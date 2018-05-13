@@ -5,3 +5,4 @@
 2. `conda install numpy pandas scipy matplotlib seaborn jupyter`
 3. `conda install -c anaconda-nb-extensions nb_conda`
 4. `conda install -c conda-forge tqdm`
+5. `pip install joblib`
