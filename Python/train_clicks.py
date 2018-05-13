@@ -23,3 +23,4 @@ if not os.path.isdir('data'):
 fn=os.path.join('data', str(int(time.time())) +
                 '_fullforce_poisson_rnn.p.z')
 joblib.dump(rnn, fn, compress=3)
+print("Saved")
