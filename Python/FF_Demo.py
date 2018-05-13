@@ -96,18 +96,17 @@ class RNN:
             return np.dot(np.tanh(activity), rnn_params['out_weights'])
 
         activity_whole = []
-        output_whole = []
+        output_whole = np.zeros((inputs.shape[0],1))
         if record_flag==1:  # Record output and activity only if this is active
             activity_whole = np.zeros(((inputs.shape[0]),rnn_params['rec_weights'].shape[0]))
-            t=0
          
-        for inp in inputs:
+        for t,inp in enumerate(inputs):
             activity = rnn_update(inp, activity)
-            output_whole.append(rnn_output(activity))
+            output_whole[t] = rnn_output(activity)
             if record_flag==1:
                 activity_whole[t,:] = activity
-                t+=1
-        output_whole = np.reshape(output_whole, (inputs.shape[0],-1))
+        # pdb.set_trace()
+        # output_whole = np.reshape(output_whole, (inputs.shape[0],-1))
         self.act = activity
         
         return output_whole, activity_whole
@@ -357,7 +356,8 @@ class RNN:
 
             plt.subplot(3,2,3)
             plt.title('Recurrent error magnitude')
-            plt.plot(train_stats['J_err_mag'])     
+            plt.plot(train_stats['J_err_mag'], alpha=0.05,
+                marker='.', markersize=1)     
 
             plt.subplot(3,2,5)
             plt.title('Recurrent weights norm')
@@ -368,7 +368,8 @@ class RNN:
             plt.title('Output learning error ratio')
 
             plt.subplot(3,2,4)
-            plt.plot(train_stats['w_err_mag'])
+            plt.plot(train_stats['w_err_mag'], alpha=0.05,
+                marker='.', markersize=1)
             plt.title('Output error magnitude')
 
             plt.subplot(3,2,6)
@@ -380,7 +381,7 @@ class RNN:
             print("No saved training values")
 
     
-    def test(self, inps_and_targs, **kwargs):
+    def test(self, inps_and_targs, do_plot=True, **kwargs):
         '''
         Function that tests a trained network. Relevant parameters in p start with 'test'
         Inputs:
@@ -396,24 +397,25 @@ class RNN:
             self.run(inp)
         # print('')
 
-        inp, targ = inps_and_targs(dt=p['dt'], **kwargs)[0:2]
-        test_fig = plt.figure()
-        colors = sns.color_palette("deep")
-        ax = test_fig.add_subplot(1,1,1)
-        tvec = np.arange(0,len(inp))*p['dt']
-        line_inp = plt.Line2D(tvec, targ, linestyle='--', color=colors[2])
-        line_targ = plt.Line2D(tvec, targ, color=colors[0], lw=2)
-        line_out = plt.Line2D(tvec, targ, linestyle='--', color=colors[1])
-        ax.add_line(line_inp)
-        ax.add_line(line_targ)
-        ax.add_line(line_out)
-        ax.legend([line_inp, line_targ, line_out], ['Input','Target','Output'], loc=1)
-        ax.set_title('RNN Testing: Wait')
-        ax.set_xlim([0,p['dt']*len(inp)])
-        ax.set_ylim([-1.2,1.2])
-        ax.set_xlabel('Time (s)')
-        plt.tight_layout()
-        test_fig.canvas.draw()
+        if do_plot:
+            inp, targ = inps_and_targs(dt=p['dt'], **kwargs)[0:2]
+            test_fig = plt.figure()
+            colors = sns.color_palette("deep")
+            inp_colors = sns.color_palette("Set2", 10)
+            ax = test_fig.add_subplot(1,1,1)
+            tvec = np.arange(0,len(inp))*p['dt']
+            line_inp = [plt.Line2D(tvec, inp[:,l], alpha=0.5, color=inp_colors[l]) for l in range(inp.shape[1])]
+            line_targ = plt.Line2D(tvec, targ, color=colors[0], lw=2)
+            line_out = plt.Line2D(tvec, targ, linestyle='--', color=colors[1])
+            [ax.add_line(l) for l in line_inp]
+            ax.add_line(line_targ)
+            ax.add_line(line_out)
+            ax.legend([line_inp, line_targ, line_out], ['Input','Target','Output'], loc=1)
+            ax.set_title('RNN Testing: Wait')
+            ax.set_xlim([0,p['dt']*len(inp)])
+            ax.set_xlabel('Time (s)')
+            plt.tight_layout()
+            test_fig.canvas.draw()
 
         E_out = 0 # Running squared error
         V_targ = 0  # Running variance of target
@@ -421,19 +423,22 @@ class RNN:
         for idx in tnrange(p['test_trials'], desc="test trials"):
             # print('.',end="")
             inp, targ = inps_and_targs(dt=p['dt'], **kwargs)[0:2]
-
-            tvec = np.arange(0,len(inp))*p['dt']
-            ax.set_xlim([0,p['dt']*len(inp)])
-            line_inp.set_xdata(tvec)
-            line_inp.set_ydata(inp)
-            line_targ.set_xdata(tvec)
-            line_targ.set_ydata(targ)
             out = self.run(inp)[0]
-            line_out.set_xdata(tvec)
-            line_out.set_ydata(out)
-            ax.set_title('RNN Testing, trial %g' % (idx+1))
-            test_fig.canvas.draw()
-            
+            tvec = np.arange(0,len(inp))*p['dt']
+
+            if do_plot:
+                ax.set_xlim([0,p['dt']*len(inp)])
+                ax.set_ylim([np.min([out.min(), targ.min()]) - 0.2,
+                    np.max([out.max(), targ.max(), inp.max()]) + 0.2])
+                [l.set_xdata(tvec) for l in line_inp]
+                [l.set_ydata(inp[:,i]) for i, l in enumerate(line_inp)]
+                line_targ.set_xdata(tvec)
+                line_targ.set_ydata(targ)
+                line_out.set_xdata(tvec)
+                line_out.set_ydata(out)
+                ax.set_title('RNN Testing, trial %g' % (idx+1))
+                test_fig.canvas.draw()
+
             E_out = E_out + np.dot(np.transpose(out-targ), out-targ)
             V_targ = V_targ + np.dot(np.transpose(targ), targ)
         # print('')
