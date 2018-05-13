@@ -1,0 +1,16 @@
+name: FORCE
+channels:
+- conda-forge
+- anaconda-nb-extensions
+dependencies:
+  - python=3.6
+  - numpy=1.13.*
+  - matplotlib=2.1.*
+  - scipy=1.0.0
+  - seaborn
+  - pandas
+  - jupyter
+  - notebook
+  - tqdm
+  - pip:
+    - joblib

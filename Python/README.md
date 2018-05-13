@@ -1,8 +1,10 @@
 # full-FORCE python demos
 
 ## Installation
-1. Make a new python 3 anaconda environment
+1. Make a new python 3 anaconda environment and activate it (e.g. `conda create -n FORCE python=3.6`; `source activate FORCE`)
 2. `conda install numpy pandas scipy matplotlib seaborn jupyter`
 3. `conda install -c anaconda-nb-extensions nb_conda`
 4. `conda install -c conda-forge tqdm`
 5. `pip install joblib`
+
+* Alternatively, you can just run `conda env create -f environment.yml` in the python folder of this repo.
