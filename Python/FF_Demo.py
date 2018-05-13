@@ -17,7 +17,7 @@ if '_' in os.environ.keys():
     else:
         tq_use = trange
 elif 'BINDER_URL' in os.environ.keys():
-    tq_use = rnrange
+    tq_use = tnrange
 
 def create_parameters(dt=0.001):
     '''Use this to define hyperparameters for any RNN instantiation. You can create an "override" script to 
