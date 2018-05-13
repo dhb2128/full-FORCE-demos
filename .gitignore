@@ -1,2 +1,6 @@
 Python/.ipynb_checkpoints
 Python/__pycache__
+Python/timed
+Python/util.py
+Python/data/fullforce_poisson_rnn.p.z
+.DS_Store
