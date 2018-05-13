@@ -119,7 +119,7 @@ class RNN:
 
 
     def train(self,inps_and_targs, monitor_training=False,
-        plot_training=False, **kwargs):
+        plot_training=False, plot_batch=True, **kwargs):
         '''Use this method to train the RNN using one of several training algorithms!
         Inputs:
             inps_and_targs: This should be a FUNCTION that randomly produces a training input and a target function
@@ -286,61 +286,62 @@ class RNN:
             x = np.array(x)
             z = np.array(z)
 
-            if batch==0:
-                # Set up plots
-                colors = sns.color_palette("deep")
-                training_fig = plt.figure()
-                ax_unit = training_fig.add_subplot(2,1,1)
-                ax_out = training_fig.add_subplot(2,1,2)
-                tvec = np.arange(0,len(inp))*p['dt']
+            if plot_batch:
+                if batch==0:
+                    # Set up plots
+                    colors = sns.color_palette("deep")
+                    training_fig = plt.figure()
+                    ax_unit = training_fig.add_subplot(2,1,1)
+                    ax_out = training_fig.add_subplot(2,1,2)
+                    tvec = np.arange(0,len(inp))*p['dt']
 
-                # Create output and target lines
-                lines_targ_out = plt.Line2D(tvec, targ,
-                    color=colors[0], lw=2)
-                lines_out = plt.Line2D(tvec, z, color=colors[1],
-                    linestyle='--')
-                ax_out.add_line(lines_targ_out)
-                ax_out.add_line(lines_out)
-
-                # Create recurrent unit and DRNN target lines
-                lines_targ_unit = {}
-                lines_unit = {}
-                for i in range(5):
-                    lines_targ_unit['%g' % i] = plt.Line2D(tvec, dx[:,i],
+                    # Create output and target lines
+                    lines_targ_out = plt.Line2D(tvec, targ,
                         color=colors[0], lw=2)
-                    lines_unit['%g' % i]= plt.Line2D(tvec, x[:,i],
-                        linestyle='--', color=colors[1])
-                    ax_unit.add_line(lines_targ_unit['%g' % i])
-                    ax_unit.add_line(lines_unit['%g' % i])
-                
-                # Set up the axes
-                ax_out.set_xlim([0,p['dt']*len(inp)])
-                ax_unit.set_xlim([0,p['dt']*len(inp)])
-                ax_out.set_ylim([-1.2,1.2])
-                ax_unit.set_ylim([-2,10])
-                ax_out.set_title('Output')
-                ax_unit.set_title('Recurrent units, batch %g' % (batch+1))
+                    lines_out = plt.Line2D(tvec, z, color=colors[1],
+                        linestyle='--')
+                    ax_out.add_line(lines_targ_out)
+                    ax_out.add_line(lines_out)
 
-                # Labels
-                ax_out.set_xlabel('Time (s)')
-                ax_out.legend([lines_targ_out,lines_out],['Target','RNN'], loc=1)
-                plt.tight_layout()
-            else:
-                # Update the plot
-                tvec = np.arange(0,len(inp))*p['dt']
-                ax_out.set_xlim([0,p['dt']*len(inp)])
-                ax_unit.set_xlim([0,p['dt']*len(inp)])
-                ax_unit.set_title('Recurrent units, batch %g' % (batch+1))
-                lines_targ_out.set_xdata(tvec)
-                lines_targ_out.set_ydata(targ)
-                lines_out.set_xdata(tvec)
-                lines_out.set_ydata(z)
-                for i in range(5):
-                    lines_targ_unit['%g' % i].set_xdata(tvec)
-                    lines_targ_unit['%g' % i].set_ydata(dx[:,i])
-                    lines_unit['%g' % i].set_xdata(tvec)
-                    lines_unit['%g' % i].set_ydata(x[:,i])
-            training_fig.canvas.draw()
+                    # Create recurrent unit and DRNN target lines
+                    lines_targ_unit = {}
+                    lines_unit = {}
+                    for i in range(5):
+                        lines_targ_unit['%g' % i] = plt.Line2D(tvec, dx[:,i],
+                            color=colors[0], lw=2)
+                        lines_unit['%g' % i]= plt.Line2D(tvec, x[:,i],
+                            linestyle='--', color=colors[1])
+                        ax_unit.add_line(lines_targ_unit['%g' % i])
+                        ax_unit.add_line(lines_unit['%g' % i])
+                    
+                    # Set up the axes
+                    ax_out.set_xlim([0,p['dt']*len(inp)])
+                    ax_unit.set_xlim([0,p['dt']*len(inp)])
+                    ax_out.set_ylim([-1.2,1.2])
+                    ax_unit.set_ylim([-2,10])
+                    ax_out.set_title('Output')
+                    ax_unit.set_title('Recurrent units, batch %g' % (batch+1))
+
+                    # Labels
+                    ax_out.set_xlabel('Time (s)')
+                    ax_out.legend([lines_targ_out,lines_out],['Target','RNN'], loc=1)
+                    plt.tight_layout()
+                else:
+                    # Update the plot
+                    tvec = np.arange(0,len(inp))*p['dt']
+                    ax_out.set_xlim([0,p['dt']*len(inp)])
+                    ax_unit.set_xlim([0,p['dt']*len(inp)])
+                    ax_unit.set_title('Recurrent units, batch %g' % (batch+1))
+                    lines_targ_out.set_xdata(tvec)
+                    lines_targ_out.set_ydata(targ)
+                    lines_out.set_xdata(tvec)
+                    lines_out.set_ydata(z)
+                    for i in range(5):
+                        lines_targ_unit['%g' % i].set_xdata(tvec)
+                        lines_targ_unit['%g' % i].set_ydata(dx[:,i])
+                        lines_unit['%g' % i].set_xdata(tvec)
+                        lines_unit['%g' % i].set_ydata(x[:,i])
+                training_fig.canvas.draw()
 
         print('Done training!')
         if monitor_training:

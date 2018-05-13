@@ -15,7 +15,7 @@ p['ff_steps_per_update'] = 1
 
 rnn = FF_Demo.RNN(p, 2, 1)
 
-rnn.train(fullforce_poisson_clicks, monitor_training=True)
+rnn.train(fullforce_poisson_clicks, monitor_training=True, plot_batch=False)
 
 if not os.path.isdir('data'):
     os.makedirs('data')
