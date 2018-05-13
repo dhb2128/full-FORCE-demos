@@ -40,7 +40,7 @@ def fullforce_oscillation_test(dt, showplots=False):
 def fullforce_poisson_clicks(dt, L=None, max_rate=40, showplots=False):
     rv = beta(4, 4)
     dt_per_s = round(1 / dt)
-    t = np.linspace(0, 2, 2 * dt_per_s + 1)
+    t = np.linspace(0, 2.2, 2.2 * dt_per_s + 1)
 
     # always have one side have a higher rate
     if L is None:
@@ -53,6 +53,7 @@ def fullforce_poisson_clicks(dt, L=None, max_rate=40, showplots=False):
     min_onset_idx = round(min_onset / dt)
     min_offset = 0.75
     max_offset = 1.5
+    resp_off_idx = round(2/dt)
     t_stim_on = np.random.randint(
         low=round(min_offset / click_dt), high=round(max_offset / click_dt))  # sec
     l_click = np.repeat(np.random.rand(t_stim_on) <
@@ -68,13 +69,13 @@ def fullforce_poisson_clicks(dt, L=None, max_rate=40, showplots=False):
     hints[min_onset_idx + 1:t_stim_off_idx,
           0] = (np.cumsum(np.diff(l_click)) - np.cumsum(np.diff(r_click))) / (max_rate / 4)
     targ = np.ones_like(hints) * -0.5
-    t_rv = np.linspace(0, 1, len(t) - t_stim_off_idx)
-    targ[t_stim_off_idx:, 0] = -0.5 + \
+    t_rv = np.linspace(0, 1,  resp_off_idx - t_stim_off_idx)
+    targ[t_stim_off_idx:resp_off_idx, 0] = -0.5 + \
         np.sign(L - R) * 1.5 * rv.pdf(t_rv) / rv.pdf(t_rv).max()
 
     if showplots:
         plot_trial(inp, targ, hints)
-    return inp, targ, hints
+    return inp, targ, hints, L, t_stim_off_idx
 
 
 def plot_trial(inp, targ, hints):

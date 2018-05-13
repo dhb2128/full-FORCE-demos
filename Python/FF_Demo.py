@@ -446,6 +446,46 @@ class RNN:
         print('Normalized error: %g' % E_norm)
         return E_norm
 
+    def test_batch(self, inps=None, targs=None, norm_only=True, inps_and_targs=None, **kwargs):
+        '''
+        Function that tests a trained network. Relevant parameters in p start with 'test'
+        Inputs:
+            inps: matrix of inputs to use (t x inputs x N trials)
+        Outputs:
+            out: matrix of rnn output from each input
+        '''
+        p = self.p
+        self.initialize_act()
+        print('Initializing',end="")
+        for i in tnrange(p['test_init_trials'], desc='init trials'):
+            # print('.',end="")
+            inp, targ = inps_and_targs(dt=p['dt'], **kwargs)[0:2]
+            self.run(inp)
+        # print('')
+
+        n_test_trials = inps.shape[2]
+        if norm_only:
+            out_all = np.zeros(n_test_trials)
+        else:
+            out_all = np.zeros((inp.shape[0], n_test_trials))
+
+        print('Testing: %g trials' % n_test_trials)
+        for idx in tnrange(n_test_trials, desc="test trials"):
+            # print('.',end="")
+            inp = inps[:,:, idx]
+            # reshape back to column vector
+            targ = targs[:,idx][:,np.newaxis]
+            out = self.run(inp)[0]
+            if norm_only:
+                out_all[idx] =np.dot(np.transpose(out-targ), out-targ) / np.dot(np.transpose(targ), targ)
+            else:
+                out_all[:,idx] = out.ravel()
+
+        return out_all
+            
+
+
+
 
 
 
