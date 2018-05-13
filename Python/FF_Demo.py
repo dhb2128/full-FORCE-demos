@@ -2,14 +2,19 @@
 FF_Demo: A module file for creating, training, and testing recurrent neural networks using full-FORCE.
 Created by Eli Pollock, Jazayeri Lab, MIT 12/13/2017
 '''
-
+import os
 import numpy as np
 import numpy.random as npr
 from scipy import sparse
 import matplotlib.pyplot as plt
-from tqdm import tnrange
+from tqdm import trange, tnrange
 import seaborn as sns
 import pdb
+
+if os.environ['_'].split("/")[-1] == "jupyter":
+    tq_use = tnrange
+else:
+    tq_use = trange
 
 def create_parameters(dt=0.001):
     '''Use this to define hyperparameters for any RNN instantiation. You can create an "override" script to 
@@ -176,7 +181,7 @@ class RNN:
 
         # Let the networks settle from the initial conditions
         print('Initializing',end="")
-        for i in tnrange(p['ff_init_trials'], desc="init trials"):
+        for i in tq_use(p['ff_init_trials'], desc="init trials"):
             # print('.',end="")
             inp, targ, hints = inps_and_targs(dt=p['dt'], **kwargs)[0:3]
             D_total_inp = np.hstack((inp,targ,hints))
@@ -188,9 +193,9 @@ class RNN:
         print('Training network...')
         # Initialize the inverse correlation matrix
         P = np.eye(N)/p['ff_alpha']
-        for batch in tnrange(p['ff_num_batches'], desc="batch"):
+        for batch in tq_use(p['ff_num_batches'], desc="batch"):
             # print('Batch %g of %g, %g trials: ' % (batch+1, p['ff_num_batches'], p['ff_trials_per_batch']),end="")
-            for trial in tnrange(p['ff_trials_per_batch'], desc="trial",
+            for trial in tq_use(p['ff_trials_per_batch'], desc="trial",
                 leave=False):
                 # if np.mod(trial,50)==0:
                 #   print('')
@@ -391,7 +396,7 @@ class RNN:
         p = self.p
         self.initialize_act()
         print('Initializing',end="")
-        for i in tnrange(p['test_init_trials'], desc='init trials'):
+        for i in tq_use(p['test_init_trials'], desc='init trials'):
             # print('.',end="")
             inp, targ = inps_and_targs(dt=p['dt'], **kwargs)[0:2]
             self.run(inp)
@@ -420,7 +425,7 @@ class RNN:
         E_out = 0 # Running squared error
         V_targ = 0  # Running variance of target
         print('Testing: %g trials' % p['test_trials'])
-        for idx in tnrange(p['test_trials'], desc="test trials"):
+        for idx in tq_use(p['test_trials'], desc="test trials"):
             # print('.',end="")
             inp, targ = inps_and_targs(dt=p['dt'], **kwargs)[0:2]
             out = self.run(inp)[0]
@@ -446,7 +451,8 @@ class RNN:
         print('Normalized error: %g' % E_norm)
         return E_norm
 
-    def test_batch(self, inps=None, targs=None, norm_only=True, inps_and_targs=None, **kwargs):
+    def test_batch(self, inps=None, targs=None, norm_only=True, norm_idx=None,
+        inps_and_targs=None, **kwargs):
         '''
         Function that tests a trained network. Relevant parameters in p start with 'test'
         Inputs:
@@ -457,7 +463,7 @@ class RNN:
         p = self.p
         self.initialize_act()
         print('Initializing',end="")
-        for i in tnrange(p['test_init_trials'], desc='init trials'):
+        for i in tq_use(p['test_init_trials'], desc='init trials'):
             # print('.',end="")
             inp, targ = inps_and_targs(dt=p['dt'], **kwargs)[0:2]
             self.run(inp)
@@ -470,13 +476,16 @@ class RNN:
             out_all = np.zeros((inp.shape[0], n_test_trials))
 
         print('Testing: %g trials' % n_test_trials)
-        for idx in tnrange(n_test_trials, desc="test trials"):
+        for idx in tq_use(n_test_trials, desc="test trials"):
             # print('.',end="")
             inp = inps[:,:, idx]
             # reshape back to column vector
             targ = targs[:,idx][:,np.newaxis]
             out = self.run(inp)[0]
             if norm_only:
+                if norm_idx is not None:
+                    out = out[norm_idx[0]:norm_idx[1]]
+                    targ = targ[norm_idx[0]:norm_idx[1]]
                 out_all[idx] =np.dot(np.transpose(out-targ), out-targ) / np.dot(np.transpose(targ), targ)
             else:
                 out_all[:,idx] = out.ravel()

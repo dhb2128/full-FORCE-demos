@@ -8,3 +8,4 @@
 5. `pip install joblib`
 
 * Alternatively, you can just run `conda env create -f environment.yml` in the python folder of this repo.
+* Then run `source activate FORCE` before opening the notebookes with `jupyter notebook`

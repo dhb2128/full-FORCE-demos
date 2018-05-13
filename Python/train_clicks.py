@@ -15,10 +15,11 @@ p['ff_steps_per_update'] = 1
 
 rnn = FF_Demo.RNN(p, 2, 1)
 
-rnn.train(fullforce_poisson_clicks, monitor_training=True
+rnn.train(fullforce_poisson_clicks, monitor_training=True)
 
 if not os.path.isdir('data'):
     os.makedirs('data')
+
 fn=os.path.join('data', str(int(time.time())) +
                 '_fullforce_poisson_rnn.p.z')
 joblib.dump(rnn, fn, compress=3)
