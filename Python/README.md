@@ -9,3 +9,6 @@
 
 * Alternatively, you can just run `conda env create -f environment.yml` in the python folder of this repo.
 * Then run `source activate FORCE` before opening the notebookes with `jupyter notebook`
+
+Or, click the binder link to run the notebooks remotely!
+[![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/dhb2128/full-FORCE-demos/master)
