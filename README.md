@@ -10,4 +10,4 @@ HUGE thank you to Eli Pollock for the Python implementation.
 * Eli Pollock: epollock@mit.edu for the Python implmentation.
 
 ## Comp club
-* see more [details](/Python/README.md) in the Python folder.
+* see more [details](/Python) in the Python folder.
