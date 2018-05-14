@@ -18,7 +18,7 @@ else:
 
 inp, targ, = fullforce_poisson_clicks(dt=0.001)[:2]
 nt = inp.shape[0]
-N = 10000  # trials
+N = 100  # trials
 
 inps = np.zeros((nt, inp.shape[1], N))
 targs = np.zeros((nt, N))
@@ -31,6 +31,7 @@ for i in trange(N):
         dt=0.001)
     targs[:, i] = targ.ravel()
 
+rnn.train_stats = None
 norms, decisions = rnn.test_batch(inps, targs, t_stims,
                                   norm_only=True, norm_idx=[200, 2000],
                                   inps_and_targs=fullforce_poisson_clicks)

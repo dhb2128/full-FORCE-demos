@@ -390,7 +390,7 @@ class RNN:
             print("No saved training values")
 
     
-    def test(self, inps_and_targs, do_plot=True, **kwargs):
+    def test(self, inps_and_targs, do_plot=True, Ls=None, **kwargs):
         '''
         Function that tests a trained network. Relevant parameters in p start with 'test'
         Inputs:
@@ -431,7 +431,10 @@ class RNN:
         print('Testing: %g trials' % p['test_trials'])
         for idx in tq_use(p['test_trials'], desc="test trials"):
             # print('.',end="")
-            inp, targ = inps_and_targs(dt=p['dt'], **kwargs)[0:2]
+            if Ls is not None:
+                inp, targ = inps_and_targs(dt=p['dt'], L=Ls[idx], **kwargs)[0:2]
+            else:
+                inp, targ = inps_and_targs(dt=p['dt'], **kwargs)[0:2]
             out = self.run(inp)[0]
             tvec = np.arange(0,len(inp))*p['dt']
 

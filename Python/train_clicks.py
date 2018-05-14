@@ -20,7 +20,7 @@ rnn.train(fullforce_poisson_clicks, monitor_training=True, plot_batch=False)
 if not os.path.isdir('data'):
     os.makedirs('data')
 
-fn=os.path.join('data', str(int(time.time())) +
-                '_fullforce_poisson_rnn.p.z')
+fn = os.path.join('data', str(int(time.time())) +
+                  '_fullforce_poisson_rnn.p.z')
 joblib.dump(rnn, fn, compress=3)
 print("Saved")
