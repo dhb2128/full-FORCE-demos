@@ -8,3 +8,6 @@ HUGE thank you to Eli Pollock for the Python implementation.
 
 * Brian DePasquale: depasquale@princeton.edu for the MATLAB implementation.
 * Eli Pollock: epollock@mit.edu for the Python implmentation.
+
+## Comp club
+* see more [details](/Python/README.md) in the Python folder.
