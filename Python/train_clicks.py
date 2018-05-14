@@ -1,5 +1,4 @@
 import os
-import numpy as np
 import joblib
 import FF_Demo
 import time
