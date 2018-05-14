@@ -18,7 +18,7 @@ else:
 
 inp, targ, = fullforce_poisson_clicks(dt=0.001)[:2]
 nt = inp.shape[0]
-N = 5000  # trials
+N = 10000  # trials
 
 inps = np.zeros((nt, inp.shape[1], N))
 targs = np.zeros((nt, N))
@@ -38,7 +38,7 @@ norms, decisions = rnn.test_batch(inps, targs, t_stims,
 
 df = pd.DataFrame(data=np.stack((L_all, t_stims, norms, decisions), axis=1),
                   columns=['L', 'dur', 'norm', 'decision'])
-df['dur_bin'] = pd.cut(df.dur, 6, labels=False)
+# df['dur_bin'] = pd.cut(df.dur, 6, labels=False)
 
-df_fn = os.path.join('data', fn_time + 'poisson_data.pkl')
+df_fn = os.path.join('data', fn_time + '_poisson_data.pkl')
 df.to_pickle(df_fn)
