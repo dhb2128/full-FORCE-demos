@@ -6,7 +6,7 @@ from trials import fullforce_poisson_clicks
 from tqdm import trange
 import pandas as pd
 
-fn_time = "1526299375"
+fn_time = "1526315369"
 fn = os.path.join('data', fn_time +
                   '_fullforce_poisson_rnn.p.z')
 
